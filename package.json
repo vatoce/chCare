@@ -1,5 +1,5 @@
 {
-  "name": "church-care-platform",
+  "name": "chcare",
   "private": true,
   "version": "0.0.0",
   "packageManager": "pnpm@9.12.0",

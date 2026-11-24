@@ -1,12 +1,14 @@
 <div align="center">
 
-# Church Care Platform
+# chCare
+
+### Church Care Platform
 
 **Open-source pastoral care software for churches: know who to visit first, and why.**
 
 منصة مفتوحة المصدر وغير ربحية للخدمة الكنسية والافتقاد والرعاية والمتابعة
 
-[![CI](https://github.com/vatoce/church-care-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/vatoce/church-care-platform/actions/workflows/ci.yml)
+[![CI](https://github.com/vatoce/chCare/actions/workflows/ci.yml/badge.svg)](https://github.com/vatoce/chCare/actions/workflows/ci.yml)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 ![Status: pre-alpha](https://img.shields.io/badge/status-pre--alpha-orange)
 ![Non-profit](https://img.shields.io/badge/non--profit-yes-green)
