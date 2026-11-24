@@ -507,7 +507,7 @@ Guiding decision: **TypeScript everywhere in one monorepo**, so a small team of 
 4. Is Coptic-calendar liturgical-season awareness required in v1 rules?
 5. Policy for who can see people in the "Brothers of the Lord" module at church vs. eparchy level?
 6. Preferred notification channels and budget for SMS/WhatsApp gateways?
-7. Licensing: open-source license choice (e.g., AGPL-3.0 to keep derivatives open vs. MIT/Apache-2.0)?
+7. Licensing: AGPL-3.0 is currently adopted (ADR-0007, proposed). Confirm, or choose MIT/Apache-2.0 instead?
 8. Who validates the pastoral rule library (priests, experienced servants) before release?
 9. Who authors and approves the starter task library (spiritual and educational tasks) per age group, and what is the review process?
 10. Default visibility of adults' task progress to servants: summary only, or opt-in only?
