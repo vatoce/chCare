@@ -1,0 +1,13 @@
+# Illustrative rule only
+- id: ATT-ABS-001
+  name: Four consecutive Sunday absences
+  category: attendance
+  applies_to: { age_min: 6 }
+  condition:
+    event_type: sunday_liturgy
+    consecutive_absences: { gte: 4 }
+  score: 30
+  reason_en: "Missed the last {n} Sunday liturgies"
+  reason_ar: "غاب عن آخر {n} قداسات أحد"
+  suggested_action: call_then_visit
+  cooldown_days: 14
