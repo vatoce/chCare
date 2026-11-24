@@ -1,0 +1,15 @@
+# Local development services only
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ccp
+      POSTGRES_PASSWORD: ccp_dev_only
+      POSTGRES_DB: ccp
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+  redis:
+    image: redis:7
+    ports: ["6379:6379"]
+volumes:
+  pgdata:

@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Status** | Draft v0.1 |
+| **Status** | Draft v0.2 (tech stack approved, see `docs/adr`) |
 | **Type** | Non-profit, open-source |
 | **Primary languages** | Arabic (RTL, default), English |
 | **Document owner** | Project initiator |
@@ -242,7 +242,7 @@ cooldown_days: 14
 | PAR-4 | Parent ↔ servant messaging (moderated, logged) | P1 |
 | PAR-5 | Permission slips and event registration approvals | P2 |
 | PAR-6 | Parents control which data they receive; older teens can have limited visibility per church policy | P1 |
-| PAR-7 | Mobile-first PWA, later native apps | P0 (PWA) |
+| PAR-7 | Native iOS & Android app for parents (see 5.11); web portal as secondary channel | P0 |
 
 ### 5.7 Church Website Integration
 
@@ -296,6 +296,29 @@ cooldown_days: 14
 
 ---
 
+### 5.11 Mobile Applications (iOS & Android)
+
+The mobile app is a **core product surface**, not an add-on. Servants use it daily in the field (often with weak connectivity), and families use it as their main window into the church.
+
+| ID | Requirement | Pri |
+|---|---|---|
+| MOB-1 | Native iOS and Android apps built from a **single TypeScript codebase** (React Native + Expo) | P0 |
+| MOB-2 | **Offline-first** for servants: encrypted local database, background sync queue, conflict resolution (last-write-wins for simple fields, merge/prompt for notes and visit logs) | P0 |
+| MOB-3 | Servant home: today's assigned visitations with the "why" behind each, one-tap call / WhatsApp / directions, quick visit logging with next follow-up date | P0 |
+| MOB-4 | Camera **QR check-in** scanning and manual roll-call; tablet **kiosk mode** for entrance check-in | P0 / P1 |
+| MOB-5 | Push notifications (APNs/FCM) with per-user preferences and quiet hours | P0 |
+| MOB-6 | App unlock with device biometrics (Face ID / fingerprint). This is **local device security only**, separate from attendance biometrics | P0 |
+| MOB-7 | Parent/guardian experience: children switcher, attendance, class progress, events, points & badges, messages | P0 |
+| MOB-8 | Child-safe media player: no external links, no comments, age-appropriate content, quizzes and points | P1 |
+| MOB-9 | Full Arabic RTL, accessibility (dynamic text, screen readers), and support for **low-end Android devices** (Android 8+, iOS 15+) | P0 |
+| MOB-10 | Secure storage of tokens, encrypted local DB, remote session revoke / device wipe, screenshot protection on sensitive screens | P0 |
+| MOB-11 | Over-the-air (OTA) updates for non-native changes, so fixes reach volunteers without store delays | P1 |
+| MOB-12 | Deep links / universal links (open a person, event or task from a notification or message) | P1 |
+| MOB-13 | Role-based experience in one app (servant, leader, parent, served person); option to ship separate store listings later via app variants | P0 |
+| MOB-14 | Store compliance: Apple Kids/Parental-gate guidance, Google Play Families policy, privacy labels and data-safety forms | P1 |
+
+---
+
 ## 6. Non-Functional Requirements
 
 ### 6.1 Security & Privacy (critical — data includes minors and vulnerable people)
@@ -312,7 +335,7 @@ cooldown_days: 14
 - p95 API latency < 500 ms for standard reads; attendance ingestion handles bursts (hundreds of scans/minute at liturgy start).
 
 ### 6.3 Availability & Offline
-- Target 99.5% in v1. Attendance capture must **work offline** (Edge Connector and mobile queue) and sync later.
+- Target 99.5% in v1. Attendance capture and servant visitation logging must **work offline** (Edge Connector and the mobile app's local database) and sync later.
 
 ### 6.4 Usability & Accessibility
 - Arabic-first, full RTL support; English secondary; i18n-ready for Coptic/other languages.
@@ -329,20 +352,32 @@ cooldown_days: 14
 
 ---
 
-## 7. Suggested Technology Stack (open to change)
+## 7. Technology Stack (Approved)
 
-| Layer | Proposal |
+Guiding decision: **TypeScript everywhere in one monorepo**, so a small team of volunteers can move between backend, web, mobile and edge code. Details and rationale are in `docs/adr/`.
+
+| Layer | Decision |
 |---|---|
-| Backend | TypeScript (NestJS) **or** Python (Django/FastAPI) — modular monolith |
-| Database | PostgreSQL with Row-Level Security; `pg_trgm` for fuzzy matching |
-| Cache/Queue | Redis + background workers (BullMQ/Celery) |
-| Frontend | React/Next.js (PWA, RTL via CSS logical properties) |
-| Mobile | PWA first; React Native/Flutter later |
-| Media | S3-compatible storage + HLS streaming |
-| Edge Connector | Small Go/Node service, Docker/Raspberry Pi-ready |
-| Auth | OIDC provider (Keycloak/Auth0/self-built) |
-| Infra | Docker, GitHub Actions, Terraform |
-| Observability | OpenTelemetry, Prometheus/Grafana, Sentry |
+| Language / Monorepo | TypeScript, pnpm workspaces + Turborepo |
+| Backend | NestJS, modular monolith, REST + OpenAPI (public API versioned) |
+| Database | PostgreSQL with **Row-Level Security** for tenant isolation; `pg_trgm` for fuzzy matching |
+| ORM / queries | Drizzle ORM (explicit SQL control for RLS) |
+| Cache / Queue | Redis + BullMQ (rule evaluation, notifications, attendance ingestion) |
+| Web | Next.js + Tailwind + shadcn/ui (RTL via CSS logical properties); church websites and web portal |
+| **Mobile (iOS + Android)** | **React Native + Expo (dev builds + EAS Build/Update)**, TypeScript, Expo Router |
+| Mobile offline data | SQLite-based local DB with a sync layer (WatermelonDB, evaluated against PowerSync in ADR-0003), SQLCipher encryption |
+| Mobile extras | expo-camera (QR), expo-notifications (APNs/FCM), expo-local-authentication, expo-secure-store |
+| Shared code | `packages/shared` (Zod schemas, types), `packages/api-client`, `packages/rules-engine` |
+| Edge Connector | Node.js (TypeScript) in Docker for Raspberry Pi / small PC; vendor SDK adapters (native bridge if a device SDK requires it) |
+| Family-tree UI | React Flow / family-chart (web), custom SVG view on mobile |
+| Auth | Better Auth (OIDC-ready); Keycloak if institutional SSO is needed |
+| Media | S3-compatible storage (Cloudflare R2 / Backblaze) + HLS streaming provider |
+| Infra | Docker Compose on a VPS (Coolify), upgrade path to managed Kubernetes |
+| CI/CD | GitHub Actions; EAS for mobile builds |
+| Testing | Vitest, Playwright (web), Maestro/Detox (mobile), mandatory tenant-isolation tests |
+| Observability | Sentry (backend, web, mobile), OpenTelemetry, Grafana/Prometheus later |
+
+**Why React Native over Flutter?** Same language as the backend and web (shared validation schemas, API client and rule types), one hiring/volunteer pool, mature offline/notification/camera ecosystem, and OTA updates through Expo. Flutter remains the fallback if performance or device-SDK needs prove otherwise (revisit trigger recorded in ADR-0003).
 
 ---
 
@@ -356,12 +391,12 @@ cooldown_days: 14
 
 | Phase | Scope | Outcome |
 |---|---|---|
-| **Phase 0 — Foundation** | Repo, CI, architecture decisions, tenant model, auth, RBAC, i18n/RTL base | Walking skeleton |
-| **Phase 1 — MVP** | People & families, family tree (manual), events & manual/QR attendance, basic reports, first care rules (~30), visitation list & visit logging | One pilot church usable |
-| **Phase 2 — Automation** | Device connector framework + first device integration, Edge Connector, auto family suggestions, rule UI, assignments | Automated attendance & smarter care |
-| **Phase 3 — Engagement** | Education/classes, parent portal, notifications, public API & widgets | Parents and website connected |
-| **Phase 4 — Growth** | Media library + gamification, Brothers of the Lord module | Full pastoral suite |
-| **Phase 5 — Scale** | Eparchy dashboards, self-service onboarding, ML-assisted ranking, native apps | Multi-church rollout |
+| **Phase 0 — Foundation** | Monorepo, CI, ADRs, tenant model + RLS, auth, RBAC, i18n/RTL base, mobile app shell (Expo) with login and push | Walking skeleton on web + iOS + Android |
+| **Phase 1 — MVP** | People & families, manual family tree, events & QR/manual attendance, first care rules (~30), visitation list & visit logging, **servant mobile app with offline sync** | One pilot church using the app in the field |
+| **Phase 2 — Automation** | Device connector framework + first device, Edge Connector, auto family suggestions, rule UI, smart assignment | Automated attendance & smarter care |
+| **Phase 3 — Engagement** | Education/classes, **parent mobile experience**, notifications, public API & widgets | Parents and church websites connected |
+| **Phase 4 — Growth** | Media library + gamification (child-safe player), Brothers of the Lord module | Full pastoral suite |
+| **Phase 5 — Scale** | Eparchy dashboards, self-service onboarding, ML-assisted ranking, store-listing variants | Multi-church rollout |
 
 ---
 
@@ -389,6 +424,8 @@ cooldown_days: 14
 | Poor recommendation quality | Start rule-based, feedback loop, per-church tuning |
 | Volunteer-run maintenance | Simple architecture, good docs, open-source community |
 | Low technical literacy of users | Simple UX, onboarding, Arabic-first, short training material |
+| Mobile sync conflicts / data loss offline | Offline-first design with tested sync, conflict rules, visible sync status |
+| App-store review for apps involving children | Follow Kids/Families policies early, parental gate, minimal data collection |
 
 ---
 
