@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Status** | Draft v0.2 (tech stack approved, see `docs/adr`) |
+| **Status** | Draft v0.3 (tech stack approved; served-person accounts & growth plans added) |
 | **Type** | Non-profit, open-source |
 | **Primary languages** | Arabic (RTL, default), English |
 | **Document owner** | Project initiator |
@@ -52,6 +52,8 @@ Churches serve hundreds or thousands of people, and the most valuable part of th
 | **Visitation** (افتقاد) | A pastoral visit, call or message to a person/family |
 | **Brothers of the Lord** (إخوة الرب) | People in need of material or moral support |
 | **Stage / Class** (فصل / مرحلة) | Spiritual-education grouping by age or level |
+| **Growth Plan** (خطة النمو) | Set of daily/monthly/yearly tasks assigned to a served person |
+| **Task** (مهمة) | A spiritual, educational or service activity the person completes and tracks |
 
 ---
 
@@ -66,7 +68,7 @@ Churches serve hundreds or thousands of people, and the most valuable part of th
 | **Care Coordinator** | Manages Brothers of the Lord | Case management, aid tracking |
 | **Teacher / Tutor** | Runs classes & tutoring | Rosters, grades, activity logs |
 | **Parent / Guardian** | Follows their children | Read-only dashboard, notifications |
-| **Served person (child/youth/adult)** | End user of media library | Videos, quizzes, points, badges |
+| **Served person (child/youth/adult)** | Has their own account; follows a personal growth plan and uses the media library | Daily/monthly/yearly tasks, progress, streaks, videos, quizzes, points, badges |
 | **Webmaster** | Church website | Public content & API |
 
 ---
@@ -127,6 +129,7 @@ Priority legend: **P0** = MVP, **P1** = next, **P2** = later.
 | PPL-10 | Life events timeline per person (joined, moved, graduated, ill, etc.) | P1 |
 | PPL-11 | Tags, groups and saved filters | P0 |
 | PPL-12 | Data lifecycle: archive, deceased, moved to another church (transfer with consent) | P1 |
+| PPL-13 | Every served person can have **their own account** linked to their person record (see 5.12.1 for age-based rules) | P0 |
 
 #### 5.2.1 Automatic Family Tree Detection
 The system suggests links; humans confirm. Signals include:
@@ -316,6 +319,71 @@ The mobile app is a **core product surface**, not an add-on. Servants use it dai
 | MOB-12 | Deep links / universal links (open a person, event or task from a notification or message) | P1 |
 | MOB-13 | Role-based experience in one app (servant, leader, parent, served person); option to ship separate store listings later via app variants | P0 |
 | MOB-14 | Store compliance: Apple Kids/Parental-gate guidance, Google Play Families policy, privacy labels and data-safety forms | P1 |
+| MOB-15 | Served-person home: today's tasks, streak and progress, one-tap completion offline, local reminders, monthly and yearly views (see 5.12) | P0 |
+| MOB-16 | Home-screen widgets and quick actions for today's tasks (iOS/Android) | P2 |
+
+
+### 5.12 Served-Person Accounts & Personal Growth Plan
+
+Every served person (child, teen or adult) can sign in to their own account, follow a personalized plan of **daily, monthly and yearly tasks** (educational, spiritual and more) that the app assigns, and see their own progress over time. The goal is encouragement and habit-building, never pressure or comparison.
+
+#### 5.12.1 Served-Person Accounts
+
+| ID | Requirement | Pri |
+|---|---|---|
+| ACC-1 | Account creation by **invite** from the church (link/QR/code) tied to an existing person record; no open sign-up that could attach to the wrong person | P0 |
+| ACC-2 | **Age tiers:** child (under 13) account is created and managed by a guardian; teen (13 to 17) has own login with guardian oversight per church policy; adult is fully independent. Age thresholds are configurable per church and locale | P0 |
+| ACC-3 | Guardian approval and linkage for minors; guardians can see the child's plan and progress (aligned with PAR-2) | P0 |
+| ACC-4 | Simple login for kids (PIN/QR/parent-assisted), and standard secure login for teens and adults; device biometric unlock (MOB-6) | P0 |
+| ACC-5 | Profile and settings: language, reminder times, preferred task categories, privacy choices | P1 |
+| ACC-6 | One person, several roles: a served person who is also a servant sees both experiences in the same app | P1 |
+| ACC-7 | Account recovery that does not expose personal data (verification through the church/servant or guardian) | P1 |
+
+#### 5.12.2 Task Model
+
+- **Task Template:** reusable definition (title, description, category, cadence, completion method, points, age/stage targeting, optional media/quiz attachment).
+- **Growth Plan:** a set of templates assigned to a stage, class, group or person for a period.
+- **Task Assignment:** the concrete instance for one person for one period (a day, month or year).
+- **Completion:** the record that the person (or the system) marked it done, with optional value, note and evidence.
+- **Cadence:** daily, weekly, monthly, yearly, seasonal (e.g., Lent, Nativity fast, summer break) and one-off.
+- **Categories (extensible per church):** Spiritual (prayer, scripture reading, hymns, fasting guidance, attending liturgy), Educational (lessons, memorization, homework, tutoring, reading), Service (volunteering, helping others), Personal growth (life skills, habits), Community (family time, visiting someone), plus custom categories.
+- **Completion methods:**
+  - *Self-check* (default for spiritual and personal tasks, honor-based).
+  - *Counter/value* (e.g., chapters read, minutes prayed).
+  - *Auto-verified* from system data: liturgy/meeting attendance (5.3), media watched or quiz passed (5.8), class assignment submitted (5.5).
+  - *Confirmed* by a servant or guardian (for selected tasks).
+
+#### 5.12.3 Requirements
+
+| ID | Requirement | Pri |
+|---|---|---|
+| GRW-1 | Task template library managed by church admins/leaders, with an **eparchy-shared starter library** that churches can copy and adapt | P0 |
+| GRW-2 | **Plans by stage/age:** each class or age group gets a default plan; a person's plan is derived automatically from their stage and can be adjusted | P0 |
+| GRW-3 | **The app assigns tasks automatically** each day/month/year based on plan, age, level, liturgical calendar and recent completion history | P0 |
+| GRW-4 | Adaptive suggestions: gentle difficulty progression, "easier day" mode after missed days, and suggestions for new tasks when the person is consistent (rule-based first, ML later) | P1 |
+| GRW-5 | Personal goals: a person (or guardian) can add their own tasks and goals in addition to assigned ones | P1 |
+| GRW-6 | **Daily view:** today's tasks with one-tap completion (works offline), reminders, and a short motivational or spiritual note | P0 |
+| GRW-7 | **Monthly view:** monthly tasks and a month summary (completion %, streaks, highlights) | P0 |
+| GRW-8 | **Yearly view:** yearly goals and a "year journey" summary (milestones reached, growth areas, books/lessons completed), exportable as a PDF certificate or report | P1 |
+| GRW-9 | **Progress tracking:** completion rate per category, streaks with grace days (a missed day does not erase long progress), progress bars and milestones | P0 |
+| GRW-10 | Integration with the **points & badges** system (5.8): points per task, badges for streaks and milestones, never shaming for missed tasks | P1 |
+| GRW-11 | Liturgical-calendar awareness: seasonal plans (Lent, Nativity, Apostles' fast, feasts), church-defined dates, Coptic calendar display | P1 |
+| GRW-12 | Visibility rules: the person sees everything; guardians see minors' plans and progress; servants and class leaders see **summary-level** progress for people they serve; adults may mark selected personal goals as private | P0 |
+| GRW-13 | Servant tools: assign or adjust tasks for a person or class, add a personal encouragement message, view class-level progress and who might need encouragement | P1 |
+| GRW-14 | **Care integration:** progress changes (e.g., a long streak that stops, a sudden drop in completion) can feed the visitation engine (5.4) as signals, only for categories and people covered by the church's privacy policy, always explainable | P1 |
+| GRW-15 | Reminder engine: push and local (offline) notifications, per-user quiet hours and frequency caps, no guilt-based wording | P0 |
+| GRW-16 | Task content in multiple languages; media or quiz attached to a task (reuses the media library) | P1 |
+| GRW-17 | Group and family challenges (opt-in), e.g., a family reads together, a class completes a memorization series | P2 |
+| GRW-18 | Reports for leaders: engagement per class/stage/period, most and least completed tasks (to improve the plans) | P1 |
+| GRW-19 | Backfill and correction: a person can mark a task done for a recent day within a configurable window; all edits are logged | P1 |
+| GRW-20 | Timezone-aware days (people travel, diaspora churches) | P1 |
+
+#### 5.12.4 Principles and Safeguards
+- **Encouragement, not surveillance.** Spiritual practice data is religious data and therefore sensitive. Defaults favor the person's dignity: no public leaderboards for spiritual tasks, no shaming, no comparison between individuals.
+- **No sacramental tracking.** The platform never records confession, communion or anything covered by the confessional relationship. Tasks are practices like prayer, reading and service that the church chooses to encourage.
+- **Honor system by default.** Self-reported completion is trusted; verification is applied only where the data already exists (attendance, quizzes) or the church chooses it.
+- **Minors:** data minimization, guardian visibility, no free-text sharing with adults outside approved servants, and no behavioral advertising or third-party analytics in child accounts.
+- **Consent and transparency:** persons (and guardians for minors) are told what servants can see and how progress may inform pastoral care.
 
 ---
 
@@ -383,7 +451,7 @@ Guiding decision: **TypeScript everywhere in one monorepo**, so a small team of 
 
 ## 8. Data Model (Initial Entities)
 
-`Eparchy`, `Church (Tenant)`, `User`, `Role`, `Permission`, `Person`, `Family/Household`, `Relationship`, `Address`, `Event`, `EventSeries`, `AttendanceRecord`, `Device`, `DeviceEnrollment`, `Consent`, `Signal`, `Rule`, `RulePack`, `RuleEvaluation`, `CareTask`, `Visit`, `Note`, `Class`, `Stage`, `Enrollment`, `Assessment`, `Activity`, `MediaItem`, `Quiz`, `QuizAttempt`, `PointLedger`, `Badge`, `CaseFile (Brothers of the Lord)`, `Aid`, `Announcement`, `Notification`, `AuditLog`, `ApiKey`.
+`Eparchy`, `Church (Tenant)`, `User`, `Role`, `Permission`, `Person`, `Family/Household`, `Relationship`, `Address`, `Event`, `EventSeries`, `AttendanceRecord`, `Device`, `DeviceEnrollment`, `Consent`, `Signal`, `Rule`, `RulePack`, `RuleEvaluation`, `CareTask`, `Visit`, `Note`, `Class`, `Stage`, `Enrollment`, `Assessment`, `Activity`, `MediaItem`, `Quiz`, `QuizAttempt`, `PointLedger`, `Badge`, `ServedAccount`, `GuardianLink`, `TaskTemplate`, `GrowthPlan`, `TaskAssignment`, `TaskCompletion`, `Streak`, `Milestone`, `CaseFile (Brothers of the Lord)`, `Aid`, `Announcement`, `Notification`, `AuditLog`, `ApiKey`.
 
 ---
 
@@ -394,8 +462,8 @@ Guiding decision: **TypeScript everywhere in one monorepo**, so a small team of 
 | **Phase 0 — Foundation** | Monorepo, CI, ADRs, tenant model + RLS, auth, RBAC, i18n/RTL base, mobile app shell (Expo) with login and push | Walking skeleton on web + iOS + Android |
 | **Phase 1 — MVP** | People & families, manual family tree, events & QR/manual attendance, first care rules (~30), visitation list & visit logging, **servant mobile app with offline sync** | One pilot church using the app in the field |
 | **Phase 2 — Automation** | Device connector framework + first device, Edge Connector, auto family suggestions, rule UI, smart assignment | Automated attendance & smarter care |
-| **Phase 3 — Engagement** | Education/classes, **parent mobile experience**, notifications, public API & widgets | Parents and church websites connected |
-| **Phase 4 — Growth** | Media library + gamification (child-safe player), Brothers of the Lord module | Full pastoral suite |
+| **Phase 3 — Engagement** | Education/classes, **parent mobile experience**, **served-person accounts and growth plans (daily/monthly/yearly tasks, progress, reminders)**, notifications, public API & widgets | Families and served persons use the app daily |
+| **Phase 4 — Growth** | Media library + gamification (child-safe player), adaptive task suggestions, yearly journey reports, task-to-care signals, Brothers of the Lord module | Full pastoral suite |
 | **Phase 5 — Scale** | Eparchy dashboards, self-service onboarding, ML-assisted ranking, store-listing variants | Multi-church rollout |
 
 ---
@@ -408,6 +476,7 @@ Guiding decision: **TypeScript everywhere in one monorepo**, so a small team of 
 - Number of families with a complete, confirmed family tree.
 - Parent portal monthly active users.
 - Media engagement (watch-completion, quiz completion).
+- Served-person accounts activated, daily active users, task completion rate and 30/60/90-day streak retention.
 - Time saved per servant per week (survey).
 - Zero tenant-isolation or privacy incidents.
 
@@ -424,6 +493,7 @@ Guiding decision: **TypeScript everywhere in one monorepo**, so a small team of 
 | Poor recommendation quality | Start rule-based, feedback loop, per-church tuning |
 | Volunteer-run maintenance | Simple architecture, good docs, open-source community |
 | Low technical literacy of users | Simple UX, onboarding, Arabic-first, short training material |
+| Task gamification creating pressure or comparison among children and youth | Private-by-default progress, grace days, no public rankings for spiritual tasks, positive wording reviewed by leaders |
 | Mobile sync conflicts / data loss offline | Offline-first design with tested sync, conflict rules, visible sync status |
 | App-store review for apps involving children | Follow Kids/Families policies early, parental gate, minimal data collection |
 
@@ -439,6 +509,10 @@ Guiding decision: **TypeScript everywhere in one monorepo**, so a small team of 
 6. Preferred notification channels and budget for SMS/WhatsApp gateways?
 7. Licensing: open-source license choice (e.g., AGPL-3.0 to keep derivatives open vs. MIT/Apache-2.0)?
 8. Who validates the pastoral rule library (priests, experienced servants) before release?
+9. Who authors and approves the starter task library (spiritual and educational tasks) per age group, and what is the review process?
+10. Default visibility of adults' task progress to servants: summary only, or opt-in only?
+11. Age thresholds for child, teen and adult accounts, and any local legal limits on minors' accounts?
+12. Should some tasks be mandatory for classes (e.g., memorization) with servant confirmation?
 
 ---
 

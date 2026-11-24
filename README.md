@@ -3,7 +3,7 @@
 > A non-profit, open-source, multi-tenant platform for **pastoral service, visitation, care and follow-up** in churches.
 > منصة غير ربحية مفتوحة المصدر لإدارة الخدمة الكنسية والافتقاد والرعاية والمتابعة.
 
-**Status:** Planning / PRD v0.2 (tech stack approved)
+**Status:** Planning / PRD v0.3 (tech stack approved; served-person growth plans added)
 
 ## Vision
 Help servants know **who to visit first, and why**, by combining people & family data, automatic attendance (face-recognition devices), and an explainable rules engine, while protecting privacy and dignity.
@@ -14,6 +14,7 @@ Help servants know **who to visit first, and why**, by combining people & family
 - Automatic attendance via face-recognition devices (+ QR/manual fallback)
 - Smart, explainable visitation recommendations (rule packs)
 - Native **iOS & Android** app (offline-first) for servants and families
+- Personal accounts for every served person with daily, monthly and yearly growth tasks and progress tracking
 - Education classes, tutoring & activities
 - Public API & widgets for each church's website
 - Media library with points & quizzes
